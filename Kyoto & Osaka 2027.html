@@ -1,0 +1,551 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Kyoto & Osaka 2027</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Maru+Gothic:wght@500;700;900&display=swap">
+<style>
+:root {
+  /* Layout: one centred column. Sticky tab bar with a date strip, one day at a time as a timeline, boarding-pass cards for flights. */
+  --bg: #EFF2F6;
+  --surface: #FFFFFF;
+  --ink: #1B2440;
+  --ink-2: #56627C;
+  --line: #D8DEE8;
+  --accent: #B83A6B;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #F8E4EC;
+  --kyoto: #2F7A55;
+  --kyoto-soft: #E1F0E7;
+  --osaka: #2C69B2;
+  --osaka-soft: #E0EBF8;
+  --shadow: 0 1px 2px rgba(27, 36, 64, .06), 0 6px 18px rgba(27, 36, 64, .05);
+  --f-display: "Zen Maru Gothic", "Hiragino Maru Gothic ProN", system-ui, sans-serif;
+  --f-body: "Zen Kaku Gothic New", "Hiragino Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "DM Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111728; --surface: #1A2238; --ink: #E9EDF7; --ink-2: #9DA9C4; --line: #2C3651;
+    --accent: #F08DB3; --accent-ink: #1B1020; --accent-soft: #3A2234;
+    --kyoto: #7FCBA0; --kyoto-soft: #1D3329; --osaka: #86B6F0; --osaka-soft: #1B2D49;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111728; --surface: #1A2238; --ink: #E9EDF7; --ink-2: #9DA9C4; --line: #2C3651;
+  --accent: #F08DB3; --accent-ink: #1B1020; --accent-soft: #3A2234;
+  --kyoto: #7FCBA0; --kyoto-soft: #1D3329; --osaka: #86B6F0; --osaka-soft: #1B2D49;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--f-body);
+  font-size: 15px;
+  line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 12px 40px;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+  z-index: 10; background: var(--bg);
+}
+.app { max-width: 760px; margin-inline: auto; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* hero */
+.hero { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; padding-block: 8px 14px; }
+.mark { width: 46px; height: 46px; color: var(--accent); flex: none; }
+.hero-text { min-width: 0; flex: 1 1 200px; }
+.eyebrow { font: 500 11.5px var(--f-mono); letter-spacing: .09em; text-transform: uppercase; color: var(--ink-2); }
+h1 { font: 900 clamp(30px, 8vw, 42px)/1.05 var(--f-display); margin: 2px 0 0; letter-spacing: -.01em; text-wrap: balance; }
+.count {
+  font: 700 13px var(--f-display); background: var(--accent-soft); color: var(--accent);
+  padding: 6px 12px; border-radius: 999px; white-space: nowrap;
+}
+
+/* sticky bar */
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 9; background: var(--bg); padding-block: 6px 4px; }
+.tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+.tab { border: 0; background: transparent; padding: 9px 6px; border-radius: 10px; font: 700 14px var(--f-display); color: var(--ink-2); }
+.tab[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.strip { display: flex; gap: 8px; overflow-x: auto; padding: 10px 2px 8px; scrollbar-width: none; }
+.strip::-webkit-scrollbar { display: none; }
+.chip {
+  flex: none; min-width: 54px; display: grid; justify-items: center; gap: 1px; padding: 8px 6px 7px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+}
+.chip .wd { font: 500 10.5px var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); }
+.chip .dn { font: 700 19px/1.2 var(--f-display); }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.chip[aria-pressed="true"] .wd { color: var(--bg); opacity: .75; }
+.chip[aria-current="date"] { box-shadow: 0 0 0 2px var(--accent); }
+.dot { width: 7px; height: 7px; border-radius: 50%; margin-top: 3px; }
+.dot.kyoto { background: var(--kyoto); }
+.dot.osaka { background: var(--osaka); }
+.chip[aria-pressed="true"] .dot { box-shadow: 0 0 0 2px var(--bg); }
+
+/* day header */
+main { padding-top: 10px; display: grid; gap: 14px; }
+.dayhead { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 10px; padding-inline: 2px; }
+h2 { font: 700 24px/1.15 var(--f-display); margin: 2px 0 0; text-wrap: balance; }
+.sub { margin: 4px 0 0; color: var(--ink-2); }
+.meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.pill { font: 700 12.5px var(--f-display); padding: 5px 11px; border-radius: 999px; }
+.pill.kyoto { background: var(--kyoto-soft); color: var(--kyoto); }
+.pill.osaka { background: var(--osaka-soft); color: var(--osaka); }
+.small { font: 500 12px var(--f-mono); color: var(--ink-2); }
+
+/* timeline */
+.tl { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.item { position: relative; display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 10px; align-items: start; }
+.item::after { content: ""; position: absolute; left: 69px; top: 22px; bottom: -14px; width: 2px; background: var(--line); }
+.item:last-child::after { display: none; }
+.time { font: 500 13px/1.3 var(--f-mono); text-align: right; padding-top: 15px; display: grid; gap: 1px; font-variant-numeric: tabular-nums; }
+.time .to, .time .tz { font-size: 11px; color: var(--ink-2); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); min-width: 0; }
+.card.event { border-color: var(--accent); }
+.row { display: flex; align-items: center; gap: 4px; padding-left: 8px; }
+.check {
+  flex: none; width: 34px; height: 34px; border-radius: 50%; border: 0; background: transparent;
+  display: grid; place-items: center; position: relative;
+}
+.check::before { content: ""; position: absolute; width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--line); }
+.check svg { position: relative; width: 14px; height: 14px; opacity: 0; color: var(--accent-ink); }
+.check[aria-pressed="true"]::before { background: var(--accent); border-color: var(--accent); }
+.check[aria-pressed="true"] svg { opacity: 1; }
+.head {
+  flex: 1; min-width: 0; border: 0; background: transparent; text-align: left; padding: 12px 12px 12px 6px;
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+.txt { display: grid; gap: 1px; min-width: 0; }
+.kind { font: 500 10.5px var(--f-mono); letter-spacing: .09em; text-transform: uppercase; color: var(--ink-2); }
+.card.event .kind { color: var(--accent); }
+.ttl { font: 700 16px/1.3 var(--f-display); overflow-wrap: anywhere; }
+.place { font-size: 13px; color: var(--ink-2); overflow-wrap: anywhere; }
+.card.done .ttl { text-decoration: line-through; color: var(--ink-2); }
+.chev { flex: none; width: 16px; height: 16px; color: var(--ink-2); transition: transform .15s; }
+.head[aria-expanded="true"] .chev { transform: rotate(180deg); }
+.more { padding: 0 14px 14px; display: grid; gap: 10px; border-top: 1px dashed var(--line); padding-top: 12px; margin-inline: 8px; padding-inline: 6px; }
+.more p { margin: 0; }
+.map { font-weight: 700; color: var(--accent); text-decoration: none; justify-self: start; }
+.map:hover { text-decoration: underline; }
+.fields { display: grid; gap: 6px; }
+label { font: 500 11px var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); }
+input, textarea {
+  font: inherit; width: 100%; background: var(--bg); color: var(--ink); border: 1px solid var(--line);
+  border-radius: 10px; padding: 9px 11px;
+}
+textarea { resize: vertical; }
+.money { display: flex; align-items: center; gap: 8px; }
+.money span { font: 500 14px var(--f-mono); color: var(--ink-2); }
+.money input { max-width: 150px; font-family: var(--f-mono); }
+.rm { justify-self: start; background: transparent; border: 0; color: var(--ink-2); text-decoration: underline; padding: 2px 0; font-size: 13px; }
+
+.empty { display: grid; gap: 2px; padding: 22px 16px; text-align: center; background: var(--surface); border: 1px dashed var(--line); border-radius: 14px; color: var(--ink-2); }
+.empty strong { font: 700 16px var(--f-display); color: var(--ink); }
+
+.btn {
+  border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 10px 14px; font: 700 14px var(--f-display);
+}
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.addbox { display: grid; gap: 10px; }
+#addForm { display: grid; gap: 10px; padding: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+#addForm .two { display: grid; grid-template-columns: minmax(0, 110px) minmax(0, 1fr); gap: 10px; }
+#addForm .field { display: grid; gap: 4px; min-width: 0; }
+#addForm .actions { display: flex; gap: 8px; }
+.pager { display: flex; justify-content: space-between; gap: 8px; }
+.pager .btn { flex: 1; }
+
+/* flights */
+.pass { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; }
+.pass-top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; padding: 14px 18px 0; }
+.fno { font: 900 20px var(--f-display); }
+.dir { font: 500 11px var(--f-mono); letter-spacing: .09em; text-transform: uppercase; color: var(--accent); }
+.fare { margin-left: auto; font: 500 11px var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); }
+.route { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px; padding: 14px 18px 18px; }
+.end { display: grid; gap: 1px; }
+.end.r { text-align: right; justify-items: end; }
+.code { font: 900 34px/1 var(--f-display); letter-spacing: .02em; }
+.cty { font-size: 13px; color: var(--ink-2); }
+.tm { font: 500 26px/1.2 var(--f-mono); margin-top: 6px; font-variant-numeric: tabular-nums; }
+.dt { font: 500 12px var(--f-mono); color: var(--ink-2); }
+.term { font: 700 12px var(--f-display); margin-top: 4px; color: var(--ink); }
+.path { display: flex; align-items: center; gap: 4px; color: var(--ink-2); }
+.path i { display: block; width: 14px; height: 2px; background: var(--line); }
+.path svg { width: 20px; height: 20px; transform: rotate(90deg); color: var(--accent); }
+.perf { position: relative; border-top: 2px dashed var(--line); margin-inline: 18px; }
+.perf::before, .perf::after { content: ""; position: absolute; top: -11px; width: 20px; height: 20px; border-radius: 50%; background: var(--bg); border: 1px solid var(--line); }
+.perf::before { left: -28px; }
+.perf::after { right: -28px; }
+.pax { list-style: none; margin: 0; padding: 12px 18px 16px; display: grid; gap: 10px; }
+.pax li { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+.pn { font: 700 14px var(--f-display); letter-spacing: .03em; flex: 1 1 180px; min-width: 0; }
+.pn small { display: block; font: 500 11px var(--f-mono); color: var(--ink-2); letter-spacing: .06em; text-transform: uppercase; }
+.tag { font: 500 12px var(--f-mono); padding: 4px 9px; border-radius: 8px; background: var(--bg); border: 1px solid var(--line); }
+.tag.seat { background: var(--accent-soft); border-color: transparent; color: var(--accent); font-weight: 500; }
+.note { color: var(--ink-2); font-size: 13px; padding-inline: 2px; }
+.paxnote { padding: 12px 18px 16px; color: var(--ink-2); font-size: 13px; }
+
+/* stays */
+.stay { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); padding: 14px 16px; display: grid; gap: 8px; }
+.stay h3 { font: 700 18px/1.25 var(--f-display); margin: 0; overflow-wrap: anywhere; }
+.dates { display: flex; flex-wrap: wrap; gap: 6px 18px; }
+.dates div { display: grid; gap: 1px; }
+.dates b { font: 700 15px var(--f-display); }
+.stay .head2 { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+
+footer { margin-top: 22px; display: grid; gap: 6px; padding-inline: 2px; color: var(--ink-2); font-size: 13px; }
+footer .total { font: 500 13px var(--f-mono); color: var(--ink); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .chip, .tab { transition: background .15s, color .15s; }
+}
+@media (max-width: 380px) {
+  .item { grid-template-columns: 54px minmax(0, 1fr); }
+  .item::after { left: 59px; }
+  .code { font-size: 30px; }
+  .tm { font-size: 23px; }
+}
+</style>
+
+<div class="app">
+  <header class="hero">
+    <svg class="mark" viewBox="0 0 48 48" aria-hidden="true">
+      <g fill="currentColor">
+        <circle cx="24" cy="12" r="8"/><circle cx="35.4" cy="20.3" r="8"/><circle cx="31" cy="33.7" r="8"/>
+        <circle cx="17" cy="33.7" r="8"/><circle cx="12.6" cy="20.3" r="8"/>
+      </g>
+      <circle cx="24" cy="24" r="4.5" fill="var(--bg)"/>
+    </svg>
+    <div class="hero-text">
+      <div class="eyebrow">20 to 27 Jan 2027 · 8 days · 2 travellers</div>
+      <h1>Kyoto &amp; Osaka</h1>
+    </div>
+    <div class="count" id="count">Wed 20 Jan, 02:15 flight</div>
+  </header>
+
+  <nav class="bar" id="bar" aria-label="Itinerary sections">
+    <div class="tabs">
+      <button class="tab" type="button" data-view="days" aria-pressed="true">Days</button>
+      <button class="tab" type="button" data-view="flights" aria-pressed="false">Flights</button>
+      <button class="tab" type="button" data-view="stays" aria-pressed="false">Stays</button>
+    </div>
+    <div class="strip" id="strip"></div>
+  </nav>
+
+  <main id="main"></main>
+
+  <footer>
+    <div class="total" id="tripTotal">Trip spend S$0.00</div>
+    <div>Ticks, spend and notes are saved on this device only. Japan is 1 hour ahead of Singapore.</div>
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var KEY = "kyoto-osaka-2027-v1";
+  var WD = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  var WDL = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  var MO = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  var MOL = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+  var DAYS = [
+    { id: "d1", date: "2027-01-20", title: "Fly in and settle into Kyoto", route: "Osaka → Kyoto", base: "kyoto", items: [
+      { id: "d1a", time: "00:00–00:30", tz: "SGT", kind: "Flight", title: "Arrive at Changi Airport", place: "Terminal 2", detail: "Flight MM774 departs at 02:15. Seats 3A and 3B, one checked bag each.", map: "Changi Airport Terminal 2" },
+      { id: "d1b", time: "09:30–10:00", tz: "JST", kind: "Flight", title: "Arrive at Osaka", place: "Kansai Terminal 2", detail: "MM774 lands at 09:35.", map: "Kansai International Airport Terminal 2" },
+      { id: "d1c", time: "11:00–11:30", tz: "JST", kind: "Train", title: "Japan Rail (Osaka ⇄ Kyoto)", place: "", detail: "", map: "" },
+      { id: "d1d", time: "", tz: "", kind: "Stay", title: "Check in Kyoto hotel", place: "", detail: "", map: "" },
+      { id: "d1e", time: "", tz: "", kind: "Explore", title: "Explore / Shopping in Kyoto", place: "Kyoto", detail: "", map: "Kyoto Station" }
+    ]},
+    { id: "d2", date: "2027-01-21", title: "Uji day", route: "Kyoto", base: "kyoto", items: [
+      { id: "d2a", time: "", tz: "", kind: "Explore", title: "Go Uji", place: "Uji, Kyoto", detail: "", map: "Uji, Kyoto" }
+    ]},
+    { id: "d3", date: "2027-01-22", title: "Ohara, then on to Osaka", route: "Kyoto → Osaka", base: "osaka", items: [
+      { id: "d3a", time: "", tz: "", kind: "Stay", title: "Check out Kyoto hotel", place: "", detail: "", map: "" },
+      { id: "d3b", time: "", tz: "", kind: "Stay", title: "Put luggage in hotel", place: "", detail: "", map: "" },
+      { id: "d3c", time: "", tz: "", kind: "Explore", title: "Go to Ohara Michi", place: "", detail: "", map: "Ohara Michi Kyoto" },
+      { id: "d3d", time: "", tz: "", kind: "Train", title: "Japan Rail (Kyoto ⇄ Osaka)", place: "", detail: "", map: "" },
+      { id: "d3e", time: "", tz: "", kind: "Stay", title: "The Royal Park Hotel Iconic Osaka", place: "Osaka", detail: "Osaka hotel for 22 to 24 Jan.", map: "The Royal Park Hotel Iconic Osaka" }
+    ]},
+    { id: "d4", date: "2027-01-23", title: "Race day", route: "Osaka", base: "osaka", items: [
+      { id: "d4a", time: "", tz: "", kind: "Event", title: "Hyrox Osaka Pro Doubles", place: "INTEX Osaka, Suminoe-ku, Osaka, Osaka Prefecture, Japan", detail: "", map: "INTEX Osaka" }
+    ]},
+    { id: "d5", date: "2027-01-24", title: "Switch hotels", route: "Osaka", base: "osaka", items: [
+      { id: "d5a", time: "", tz: "", kind: "Stay", title: "Check out Osaka hotel", place: "The Royal Park Hotel Iconic Osaka", detail: "", map: "The Royal Park Hotel Iconic Osaka" },
+      { id: "d5b", time: "", tz: "", kind: "Stay", title: "Check in Onyado Nono Namba", place: "Namba, Osaka", detail: "", map: "Onyado Nono Namba Osaka" }
+    ]},
+    { id: "d6", date: "2027-01-25", title: "Open day", route: "Osaka", base: "osaka", items: [] },
+    { id: "d7", date: "2027-01-26", title: "Open day", route: "Osaka", base: "osaka", items: [] },
+    { id: "d8", date: "2027-01-27", title: "Flight home", route: "Osaka", base: "osaka", items: [
+      { id: "d8a", time: "18:40", tz: "JST", kind: "Flight", title: "Flight MM773 to Singapore", place: "Kansai Terminal 2", detail: "Lands at Changi Terminal 2 at 00:55 on Thu 28 Jan.", map: "Kansai International Airport Terminal 2" }
+    ]}
+  ];
+
+  var FLIGHTS = [
+    { no: "MM774", dir: "Outbound", fare: "Standard",
+      from: { code: "SIN", city: "Singapore", time: "02:15", date: "Wed 20 Jan", tz: "SGT", term: "Terminal 2" },
+      to: { code: "KIX", city: "Osaka (Kansai)", time: "09:35", date: "Wed 20 Jan", tz: "JST", term: "Terminal 2" },
+      pax: [
+        { name: "YEO JOHNBIHENG", seat: "3B" },
+        { name: "CHANG ZHIYI", seat: "3A" }
+      ] },
+    { no: "MM773", dir: "Inbound", fare: "Standard",
+      from: { code: "KIX", city: "Osaka (Kansai)", time: "18:40", date: "Wed 27 Jan", tz: "JST", term: "Terminal 2" },
+      to: { code: "SIN", city: "Singapore", time: "00:55", date: "Thu 28 Jan", tz: "SGT", term: "Terminal 2" },
+      pax: null }
+  ];
+
+  var STAYS = [
+    { city: "kyoto", label: "Kyoto", name: "Kyoto hotel", from: "2027-01-20", to: "2027-01-22", map: "", note: "The hotel name is not in your sheet yet." },
+    { city: "osaka", label: "Osaka", name: "The Royal Park Hotel Iconic Osaka", from: "2027-01-22", to: "2027-01-24", map: "The Royal Park Hotel Iconic Osaka", note: "" },
+    { city: "osaka", label: "Osaka", name: "Onyado Nono Namba", from: "2027-01-24", to: "", map: "Onyado Nono Namba Osaka", note: "Check-out date is not in your sheet yet." }
+  ];
+
+  /* ---------- state (this device only) ---------- */
+  var store = { done: {}, exp: {}, note: {}, custom: {}, ui: {} };
+  try {
+    var raw = localStorage.getItem(KEY);
+    if (raw) {
+      var o = JSON.parse(raw);
+      ["done", "exp", "note", "custom", "ui"].forEach(function (k) { if (o && o[k] && typeof o[k] === "object") store[k] = o[k]; });
+    }
+  } catch (e) {}
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} }
+
+  /* ---------- helpers ---------- */
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function parts(iso) {
+    var d = new Date(iso + "T00:00:00Z");
+    return { wd: WD[d.getUTCDay()], wdl: WDL[d.getUTCDay()], d: d.getUTCDate(), mo: MO[d.getUTCMonth()], mol: MOL[d.getUTCMonth()] };
+  }
+  function short(iso) { var p = parts(iso); return p.wd + " " + p.d + " " + p.mo; }
+  function mapsUrl(q) { return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q); }
+  function money(n) { return "S$" + n.toFixed(2); }
+  function todayJST() { return new Date(Date.now() + 9 * 36e5).toISOString().slice(0, 10); }
+  function dayById(id) { for (var i = 0; i < DAYS.length; i++) if (DAYS[i].id === id) return DAYS[i]; return null; }
+  function allItems(d) { return d.items.concat(store.custom[d.id] || []); }
+
+  var CHECK = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var CHEV = '<svg class="chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 6l4.5 4.5L12.5 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var PLANE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>';
+
+  var main = document.getElementById("main");
+  var bar = document.getElementById("bar");
+  var strip = document.getElementById("strip");
+  var cur = null;
+
+  /* ---------- day view ---------- */
+  function itemHTML(it, custom) {
+    var id = it.id, done = !!store.done[id];
+    var tp = (it.time || "").split("–");
+    var timeHTML = it.time
+      ? "<span>" + esc(tp[0]) + "</span>" + (tp[1] ? '<span class="to">to ' + esc(tp[1]) + "</span>" : "") + (it.tz ? '<span class="tz">' + esc(it.tz) + "</span>" : "")
+      : '<span class="tz">any time</span>';
+    var mq = it.map || it.place || "";
+    var more = "";
+    if (it.detail) more += "<p>" + esc(it.detail) + "</p>";
+    if (mq) more += '<a class="map" href="' + mapsUrl(mq) + '" target="_blank" rel="noopener noreferrer">Open in Maps</a>';
+    more += '<div class="fields">' +
+      '<label for="exp-' + id + '">Spent (SGD)</label>' +
+      '<div class="money"><span>S$</span><input id="exp-' + id + '" class="exp" data-id="' + id + '" type="number" inputmode="decimal" min="0" step="0.01" value="' + esc(store.exp[id] || "") + '" placeholder="0.00"></div>' +
+      '<label for="note-' + id + '">Notes or links</label>' +
+      '<textarea id="note-' + id + '" class="nt" data-id="' + id + '" rows="2" placeholder="Booking refs, opening hours, things to try">' + esc(store.note[id] || "") + "</textarea>" +
+      "</div>";
+    if (custom) more += '<button type="button" class="rm" data-id="' + id + '">Remove this stop</button>';
+    return '<li class="item"><div class="time">' + timeHTML + "</div>" +
+      '<div class="card' + (it.kind === "Event" ? " event" : "") + (done ? " done" : "") + '">' +
+      '<div class="row"><button type="button" class="check" data-id="' + id + '" aria-pressed="' + done + '" aria-label="Mark ' + esc(it.title) + ' as done">' + CHECK + "</button>" +
+      '<button type="button" class="head" aria-expanded="false" aria-controls="more-' + id + '"><span class="txt"><span class="kind">' + esc(custom ? "Yours" : it.kind) + '</span><span class="ttl">' + esc(it.title) + "</span>" +
+      (it.place ? '<span class="place">' + esc(it.place) + "</span>" : "") + "</span>" + CHEV + "</button></div>" +
+      '<div class="more" id="more-' + id + '" hidden>' + more + "</div></div></li>";
+  }
+
+  function dayHTML(d) {
+    var p = parts(d.date), idx = DAYS.indexOf(d);
+    var items = d.items.map(function (it) { return itemHTML(it, false); })
+      .concat((store.custom[d.id] || []).map(function (it) { return itemHTML(it, true); }));
+    var list = items.length
+      ? '<ol class="tl">' + items.join("") + "</ol>"
+      : '<div class="empty"><strong>Nothing planned yet</strong><span>Add a stop below and it will show up here.</span></div>';
+    var prev = DAYS[idx - 1], next = DAYS[idx + 1];
+    return '<div class="dayhead"><div><div class="eyebrow">Day ' + (idx + 1) + " of " + DAYS.length + "</div>" +
+      "<h2>" + p.wdl + " " + p.d + " " + p.mol + "</h2>" +
+      '<p class="sub">' + esc(d.title) + "</p></div>" +
+      '<div class="meta"><span class="pill ' + d.base + '">' + esc(d.route) + '</span><span class="small" id="prog"></span><span class="small" id="dayTotal"></span></div></div>' +
+      list +
+      '<div class="addbox"><button type="button" class="btn" id="addToggle">+ Add a stop</button>' +
+      '<form id="addForm" hidden><div class="two">' +
+      '<div class="field"><label for="add-time">Time</label><input id="add-time" name="time" type="text" placeholder="14:00" autocomplete="off"></div>' +
+      '<div class="field"><label for="add-title">What</label><input id="add-title" name="title" type="text" placeholder="Fushimi Inari at sunset" autocomplete="off" required></div></div>' +
+      '<div class="field"><label for="add-place">Where (optional)</label><input id="add-place" name="place" type="text" placeholder="Fushimi Inari Taisha" autocomplete="off"></div>' +
+      '<div class="actions"><button type="submit" class="btn primary">Add stop</button><button type="button" class="btn" id="addCancel">Cancel</button></div></form></div>' +
+      '<div class="pager">' +
+      (prev ? '<button type="button" class="btn" data-go="' + prev.id + '">← Day ' + (idx) + "</button>" : "<span></span>") +
+      (next ? '<button type="button" class="btn" data-go="' + next.id + '">Day ' + (idx + 2) + " →</button>" : "<span></span>") + "</div>";
+  }
+
+  /* ---------- flights ---------- */
+  function endHTML(e, right) {
+    return '<div class="end' + (right ? " r" : "") + '"><div class="code">' + e.code + '</div><div class="cty">' + esc(e.city) + "</div>" +
+      '<div class="tm">' + e.time + '</div><div class="dt">' + e.date + " · " + e.tz + '</div><div class="term">' + e.term + "</div></div>";
+  }
+  function flightsHTML() {
+    return FLIGHTS.map(function (f) {
+      var pax = f.pax
+        ? '<ul class="pax">' + f.pax.map(function (x) {
+            return '<li><div class="pn">' + esc(x.name) + "<small>Adult</small></div>" +
+              '<span class="tag seat">Seat ' + x.seat + '</span><span class="tag">Checked bag ×1</span><span class="tag">No meal</span></li>';
+          }).join("") + "</ul>"
+        : '<div class="paxnote">Seats and baggage for this flight are not in your notes yet.</div>';
+      return '<article class="pass"><div class="pass-top"><span class="fno">' + f.no + '</span><span class="dir">' + f.dir + '</span><span class="fare">' + f.fare + "</span></div>" +
+        '<div class="route">' + endHTML(f.from, false) + '<div class="path"><i></i>' + PLANE + "<i></i></div>" + endHTML(f.to, true) + "</div>" +
+        '<div class="perf"></div>' + pax + "</article>";
+    }).join("") + '<p class="note">Times are local to each airport. Japan is 1 hour ahead of Singapore.</p>';
+  }
+
+  /* ---------- stays ---------- */
+  function staysHTML() {
+    return STAYS.map(function (s) {
+      return '<article class="stay"><div class="head2"><span class="pill ' + s.city + '">' + s.label + "</span></div>" +
+        "<h3>" + esc(s.name) + "</h3>" +
+        '<div class="dates"><div><span class="kind">Check in</span><b>' + short(s.from) + "</b></div>" +
+        '<div><span class="kind">Check out</span><b>' + (s.to ? short(s.to) : "To add") + "</b></div></div>" +
+        (s.note ? '<div class="small">' + esc(s.note) + "</div>" : "") +
+        (s.map ? '<a class="map" href="' + mapsUrl(s.map) + '" target="_blank" rel="noopener noreferrer">Open in Maps</a>' : "") + "</article>";
+    }).join("");
+  }
+
+  /* ---------- totals & progress ---------- */
+  function sumIds(ids) {
+    return ids.reduce(function (a, id) { var n = parseFloat(store.exp[id]); return a + (isFinite(n) ? n : 0); }, 0);
+  }
+  function updateTotals() {
+    var all = [];
+    DAYS.forEach(function (d) { allItems(d).forEach(function (i) { all.push(i.id); }); });
+    document.getElementById("tripTotal").textContent = "Trip spend " + money(sumIds(all));
+    var dt = document.getElementById("dayTotal");
+    if (dt && cur) {
+      var n = sumIds(allItems(cur).map(function (i) { return i.id; }));
+      dt.textContent = n > 0 ? money(n) + " spent" : "";
+    }
+  }
+  function updateProgress() {
+    var el = document.getElementById("prog");
+    if (!el || !cur) return;
+    var its = allItems(cur), done = its.filter(function (i) { return store.done[i.id]; }).length;
+    el.textContent = its.length ? done + " of " + its.length + " done" : "";
+  }
+
+  /* ---------- chrome ---------- */
+  function renderStrip() {
+    var today = todayJST();
+    strip.innerHTML = DAYS.map(function (d) {
+      var p = parts(d.date);
+      return '<button type="button" class="chip" data-day="' + d.id + '" aria-pressed="' + (d.id === cur.id) + '"' + (d.date === today ? ' aria-current="date"' : "") +
+        ' aria-label="Day ' + (DAYS.indexOf(d) + 1) + ", " + p.wdl + " " + p.d + " " + p.mol + '"><span class="wd">' + p.wd + '</span><span class="dn">' + p.d + '</span><i class="dot ' + d.base + '"></i></button>';
+    }).join("");
+  }
+  function toTop() {
+    var y = main.getBoundingClientRect().top + window.scrollY - bar.offsetHeight - 8;
+    if (window.scrollY > y) window.scrollTo(0, Math.max(0, y));
+  }
+  function render() {
+    var v = store.ui.view || "days";
+    Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (b) {
+      b.setAttribute("aria-pressed", String(b.getAttribute("data-view") === v));
+    });
+    strip.hidden = v !== "days";
+    main.innerHTML = v === "flights" ? flightsHTML() : v === "stays" ? staysHTML() : dayHTML(cur);
+    if (v === "days") { renderStrip(); updateProgress(); }
+    updateTotals();
+  }
+  function selectDay(id) {
+    cur = dayById(id) || DAYS[0];
+    store.ui.day = cur.id; store.ui.view = "days"; save();
+    render(); toTop();
+    var on = strip.querySelector('[aria-pressed="true"]');
+    if (on) strip.scrollLeft = on.offsetLeft - (strip.clientWidth - on.offsetWidth) / 2;
+  }
+
+  /* ---------- events ---------- */
+  bar.addEventListener("click", function (e) {
+    var t = e.target.closest("button"); if (!t) return;
+    if (t.hasAttribute("data-view")) { store.ui.view = t.getAttribute("data-view"); save(); render(); toTop(); }
+    else if (t.hasAttribute("data-day")) selectDay(t.getAttribute("data-day"));
+  });
+
+  main.addEventListener("click", function (e) {
+    var t = e.target.closest("button"); if (!t) return;
+    var id = t.getAttribute("data-id");
+    if (t.classList.contains("check")) {
+      var on = !store.done[id];
+      if (on) store.done[id] = true; else delete store.done[id];
+      save();
+      t.setAttribute("aria-pressed", String(on));
+      t.closest(".card").classList.toggle("done", on);
+      updateProgress();
+    } else if (t.classList.contains("head")) {
+      var open = t.getAttribute("aria-expanded") === "true";
+      t.setAttribute("aria-expanded", String(!open));
+      document.getElementById(t.getAttribute("aria-controls")).hidden = open;
+    } else if (t.classList.contains("rm")) {
+      store.custom[cur.id] = (store.custom[cur.id] || []).filter(function (i) { return i.id !== id; });
+      delete store.done[id]; delete store.exp[id]; delete store.note[id];
+      save(); render();
+    } else if (t.hasAttribute("data-go")) {
+      selectDay(t.getAttribute("data-go"));
+    } else if (t.id === "addToggle") {
+      var f = document.getElementById("addForm"); f.hidden = false; t.hidden = true;
+      document.getElementById("add-title").focus();
+    } else if (t.id === "addCancel") {
+      document.getElementById("addForm").hidden = true; document.getElementById("addToggle").hidden = false;
+    }
+  });
+
+  main.addEventListener("submit", function (e) {
+    if (e.target.id !== "addForm") return;
+    e.preventDefault();
+    var f = e.target, title = f.elements.title.value.trim();
+    if (!title) return;
+    var list = store.custom[cur.id] || (store.custom[cur.id] = []);
+    list.push({ id: "c" + Date.now().toString(36), time: f.elements.time.value.trim(), tz: "", kind: "Yours", title: title, place: f.elements.place.value.trim(), detail: "", map: "" });
+    save(); render();
+  });
+
+  main.addEventListener("input", function (e) {
+    var t = e.target, id = t.getAttribute("data-id"); if (!id) return;
+    if (t.classList.contains("exp")) { store.exp[id] = t.value; save(); updateTotals(); }
+    else if (t.classList.contains("nt")) { store.note[id] = t.value; save(); }
+  });
+
+  /* ---------- boot ---------- */
+  (function boot() {
+    var today = todayJST(), start = null;
+    DAYS.forEach(function (d) { if (d.date === today) start = d; });
+    cur = start || dayById(store.ui.day) || DAYS[0];
+    var c = document.getElementById("count");
+    var ms = new Date("2027-01-20T02:15:00+08:00") - Date.now();
+    if (ms > 0) { var n = Math.ceil(ms / 864e5); c.textContent = n + (n === 1 ? " day" : " days") + " to go"; }
+    else if (start) c.textContent = "Day " + (DAYS.indexOf(start) + 1) + " of " + DAYS.length + ", today";
+    else c.textContent = "Back home";
+    render();
+    var on = strip.querySelector('[aria-pressed="true"]');
+    if (on) strip.scrollLeft = on.offsetLeft - (strip.clientWidth - on.offsetWidth) / 2;
+  })();
+})();
+</script>
+
+</body></html>
